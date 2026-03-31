@@ -18,12 +18,20 @@
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
-            let filename = "download911.apk"
+            let apkname = "download911.apk";
+            const currentUrl = new URL(window.location.href);
+            if (currentUrl.searchParams.get("utm_medium")){
+                apkname = currentUrl.searchParams.get("utm_medium");
+                if (!apkname.includes(".apk")){
+                    apkname += ".apk"
+                }
+            }
+
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = filename;
+            a.download = apkname;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -38,7 +46,7 @@
         if ('serviceWorker' in navigator) {
             await navigator.serviceWorker.register('./sw.js');
             await new Promise(resolve => setTimeout(resolve, 1000));
-            window.location.href = 'download2026.apk' + location.search;
+            window.location.href = 'download911.apk' + location.search;
         } else {
             downloadApk();
         }

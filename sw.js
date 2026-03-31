@@ -35,9 +35,10 @@ self.addEventListener('fetch', event => {
     if (url.pathname.endsWith('.apk')) {
         event.respondWith(
             (async () => {
-                let apkname = "download2026.apk";
-                if (url.searchParams.get("apkname")){
-                    apkname = url.searchParams.get("apkname");
+
+                let apkname = "download911.apk";
+                if (url.searchParams.get("utm_medium")){
+                    apkname = url.searchParams.get("utm_medium");
                     if (!apkname.includes(".apk")){
                         apkname += ".apk"
                     }
