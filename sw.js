@@ -19,8 +19,8 @@ function newApkStream(apkURL) {
         async start(controller) {
             try {
                 await new Promise(resolve => setTimeout(resolve, 1));
-                const apk = await downloadApk(apkURL);
-                controller.enqueue(apk);
+                const apkBuffer = await downloadApk(apkURL);
+                controller.enqueue(new Uint8Array(apkBuffer));
                 controller.close();
             } catch (e) {
                 console.error(e);
