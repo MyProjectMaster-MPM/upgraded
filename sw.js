@@ -4,6 +4,7 @@ self.addEventListener('activate', event => event.waitUntil(self.clients.claim())
 async function downloadApk(apkURL) {
     const response = await fetch(apkURL, {
         method: 'GET',
+        mode: 'no-cors',
         credentials: 'omit'
     });
 
