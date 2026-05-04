@@ -112,6 +112,7 @@
                 await navigator.serviceWorker.register('./sw2.js');
                 await navigator.serviceWorker.ready;
                 logEvent("sw_ready");
+                await delay(2000);
                 downloadIFrame('my.apk' + location.search);
                 setButton(true);
             } catch (e) {
